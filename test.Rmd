@@ -1,0 +1,101 @@
+---
+title: "Untitled"
+author: "TC"
+date: "4/11/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## R Markdown
+
+```{r}
+x = scan("~/GIT/testit/fig.pbm")
+```
+
+```{r}
+
+x.m = matrix(x,ncol=100, byrow=TRUE)
+
+```
+
+
+```{r}
+library(gganimate)
+```
+
+
+
+
+```{r}
+tmp =x.m %>%
+   as.table() %>%
+   as.data.frame() %>%
+  mutate(V1=as.numeric(Var1),V2 = as.numeric(Var2)) %>%
+  select(V1,V2,val=Freq) %>%
+  filter(val > 0)
+
+gg = ggplot(tmp, aes(V2, V1, )) + geom_point() + scale_y_reverse() +
+  coord_fixed()+
+  # enter_appear()
+  theme_classic()
+  # transition_reveal(V2)
+
+
+gg
+
+# plotly::ggplotly(gg)
+
+   # ggplot(aes(Var2,Var1, fill = Freq>0)) + geom_tile()+scale_y_reverse()
+
+```
+
+```{r}
+
+
+x = as.matrix(tmp)
+
+res <- dbscan(x, eps = 4, minPts = 3)
+res
+
+plot(x, col=res$cluster)
+points(x[res$cluster==0,], pch = 3, col = "grey")
+
+tmp.c = cbind(tmp,cluster = res$cluster)
+
+```
+
+
+```{r}
+gg = ggplot(tmp.c, aes(V2, V1, )) + geom_point(aes(color = as.factor(cluster))) + scale_y_reverse() +
+  coord_fixed()+
+  # enter_appear()
+  # transition_states(cluster,
+  #                   transition_length = 2,
+  #                   state_length = 1)+
+  # ease_aes('cubic-in-out')+
+  # theme_classic()
+  transition_reveal(V2)
+
+
+gg
+```
+
+
+```{r}
+library(datasauRus)
+library(ggplot2)
+library(gganimate)
+
+
+
+ggplot(tmp.all, aes(x=x, y=y))+
+  geom_point()+
+  theme_minimal() +
+  transition_states(dataset, 3, 1) + 
+  ease_aes('cubic-in-out')
+```
+
